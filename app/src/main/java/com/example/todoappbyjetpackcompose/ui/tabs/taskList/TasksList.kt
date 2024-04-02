@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -190,9 +192,9 @@ fun Header(
             Icon(
                 imageVector =
                 if (langIndex == 1) {
-                    Icons.AutoMirrored.Filled.KeyboardArrowRight
+                    Icons.Filled.KeyboardArrowRight
                 } else {
-                    Icons.AutoMirrored.Filled.KeyboardArrowLeft
+                    Icons.Filled.KeyboardArrowLeft
                 },
                 contentDescription = "Back",
                 tint = MaterialTheme.colorScheme.tertiary
@@ -225,9 +227,9 @@ fun Header(
             Icon(
                 imageVector =
                 if (langIndex == 1) {
-                    Icons.AutoMirrored.Filled.KeyboardArrowLeft
+                    Icons.Filled.KeyboardArrowLeft
                 } else {
-                    Icons.AutoMirrored.Filled.KeyboardArrowRight
+                    Icons.Filled.KeyboardArrowRight
                 },
                 contentDescription = "Next",
                 tint = MaterialTheme.colorScheme.tertiary
