@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_title">قائمة المهام</string>
+    <string name="today">اليوم</string>
+
+    <string name="add_task">اضافة مهمة</string>
+    <string name="task_title">عنوان المهمة</string>
+    <string name="task_desc">وصف المهمة</string>
+    <string name="select_date">اختر تاريخ للمهمة</string>
+    <string name="enter_title">من فضلك ادخل عنوان</string>
+    <string name="enter_desc">من فضلك ادخل وصف</string>
+    <string name="enter_date">من فضلك ادخل تاريخ</string>
+    <string name="done">تمت!</string>
+    <string name="successfully">تم اضافة المهمة بنجاح</string>
+
+    <string name="settings">الاعدادات</string>
+    <string name="language">اللغة</string>
+    <string name="english">الانجليزية</string>
+    <string name="arabic">العربية</string>
+
+    <string name="edit_task">تعديل المهمة</string>
+    <string name="save_task_changes">حفط التعديلات</string>
+</resources>
