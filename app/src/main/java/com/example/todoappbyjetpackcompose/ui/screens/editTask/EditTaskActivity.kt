@@ -31,9 +31,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,9 +49,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todo.model.Task
+import com.example.todoappbyjetpackcompose.MainActivity
 import com.example.todoappbyjetpackcompose.R
 import com.example.todoappbyjetpackcompose.ui.screens.calendar
 import com.example.todoappbyjetpackcompose.ui.tabs.taskList.TasksViewModel
+import com.example.todoappbyjetpackcompose.ui.tabs.taskList.dateTime
 import com.example.todoappbyjetpackcompose.ui.theme.LightPrimary
 import com.example.todoappbyjetpackcompose.ui.theme.TodoAppByJetpackComposeTheme
 import com.example.todoappbyjetpackcompose.utils.TopAppBar
@@ -75,9 +79,9 @@ class EditTaskActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    EditTaskContent(
-                        task = task,
+                    EditTaskContent(task = task, viewModel,
                         onUpdateTaskClick = { task -> viewModel.updateTask(task) }) {
+                        startActivity(Intent(this, MainActivity::class.java))
                         finish()
                     }
                 }
@@ -100,6 +104,7 @@ class EditTaskActivity : ComponentActivity() {
 @Composable
 fun EditTaskContent(
     task: Task,
+    viewModel: TasksViewModel,
     onUpdateTaskClick: (Task) -> Unit,
     onFinish: () -> Unit
 ) {
@@ -109,7 +114,12 @@ fun EditTaskContent(
             TopAppBar(stringResource(id = R.string.app_title)) {
                 onFinish()
             }
-            EditTaskCard(task = task, taskId = task.id ?: 0, onUpdateTaskClick = onUpdateTaskClick)
+            EditTaskCard(
+                task = task,
+                viewModel,
+                taskId = task.id ?: 0,
+                onUpdateTaskClick = onUpdateTaskClick
+            )
         },
     ) {
 
@@ -118,13 +128,21 @@ fun EditTaskContent(
 }
 
 @Composable
-fun EditTaskCard(task: Task, taskId: Int, onUpdateTaskClick: (Task) -> Unit) {
+fun EditTaskCard(
+    task: Task,
+    viewModel: TasksViewModel,
+    taskId: Int,
+    onUpdateTaskClick: (Task) -> Unit
+) {
 
     val simpleDateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
 
     var title by remember { mutableStateOf(task.title) }
     var description by remember { mutableStateOf(task.description) }
-    var dateTime by remember { mutableStateOf(simpleDateFormat.format(task.dateTime)) }
+    var date by remember { mutableStateOf(task.dateTime) }
+    var dateString by remember { mutableStateOf(simpleDateFormat.format(date)) }
+
+    var isUpdated by rememberSaveable { mutableStateOf(false) }
 
     Card(
         modifier = Modifier
@@ -211,7 +229,7 @@ fun EditTaskCard(task: Task, taskId: Int, onUpdateTaskClick: (Task) -> Unit) {
                         }
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                             dialog.setOnDateSetListener { datePicker, year, month, day ->
-                                dateTime = "$year-${month + 1}-$day"
+                                dateString = "$year-${month + 1}-$day"
 
                                 calendar.set(year, month, day)
                                 //to ignore time
@@ -231,7 +249,7 @@ fun EditTaskCard(task: Task, taskId: Int, onUpdateTaskClick: (Task) -> Unit) {
 
 
             Text(
-                text = dateTime,
+                text = dateString,
                 color = MaterialTheme.colorScheme.onPrimary,
                 fontSize = 16.sp,
                 modifier = Modifier
@@ -247,17 +265,27 @@ fun EditTaskCard(task: Task, taskId: Int, onUpdateTaskClick: (Task) -> Unit) {
 
             Button(
                 onClick = {
-                    if (title!!.isNotBlank() && description!!.isNotBlank() && dateTime.toString()
+                    if (title!!.isNotBlank() && description!!.isNotBlank() && date.toString()
                             .isNotBlank()
                     ) {
                         val task =
-                            Task(
-                                id = taskId,
-                                title = title,
-                                description = description,
-                                dateTime = calendar.timeInMillis
-                            )
+                            if (date.toString().equals(dateString)) {
+                                Task(
+                                    id = taskId,
+                                    title = title,
+                                    description = description,
+                                    dateTime = date
+                                )
+                            } else {
+                                Task(
+                                    id = taskId,
+                                    title = title,
+                                    description = description,
+                                    dateTime = calendar.timeInMillis
+                                )
+                            }
                         onUpdateTaskClick(task)
+                        isUpdated = true
                         Toast.makeText(context, "Task Updated Successfully", Toast.LENGTH_LONG)
                             .show()
 
@@ -267,8 +295,6 @@ fun EditTaskCard(task: Task, taskId: Int, onUpdateTaskClick: (Task) -> Unit) {
                         Toast.makeText(context, "Please enter Description", Toast.LENGTH_LONG)
                             .show()
                     }
-
-
                 },
                 modifier = Modifier
                     .width(255.dp)
@@ -309,7 +335,7 @@ fun Preview() {
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-        EditTaskContent(Task(), {}, {})
+//        EditTaskContent(Task(), {}, {})
     }
 
 }

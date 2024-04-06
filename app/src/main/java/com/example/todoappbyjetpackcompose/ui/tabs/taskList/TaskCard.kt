@@ -1,7 +1,6 @@
 package com.example.todoappbyjetpackcompose.ui.tabs.taskList
 
 import android.os.Build
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,12 +34,11 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissState
 import androidx.compose.material3.DismissValue
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismiss
-import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
@@ -94,7 +91,7 @@ fun TaskList(
                 }) { task ->
 
                 TaskCard(
-                    task = task, viewModel,
+                    task = task,
                     onDoneTaskClick = onDoneTaskClick,
                     navToEditActivity = navToEditActivity,
                     navController
@@ -108,7 +105,6 @@ fun TaskList(
 @Composable
 fun TaskCard(
     task: Task,
-    viewModel: TasksViewModel,
     onDoneTaskClick: (Task) -> Unit,
     navToEditActivity: (Task) -> Unit,
     navController: NavController?
@@ -141,7 +137,7 @@ fun TaskCard(
             horizontalArrangement = Arrangement.Center
         ) {
 
-            HorizontalDivider(
+            Divider(
                 modifier = Modifier
                     .fillMaxHeight()
                     .width(2.dp),
@@ -285,8 +281,7 @@ fun <T> SwipeToDeleteContainer(
         SwipeToDismiss(state = state,
             background = {
                 DeleteTaskBackground(swipeDismissState = state)
-            },
-            directions = setOf(DismissDirection.StartToEnd),
+            }, directions = setOf(DismissDirection.StartToEnd),
             dismissContent = { content(item) }
         )
     }
@@ -316,10 +311,16 @@ fun DeleteTaskBackground(swipeDismissState: DismissState) {
 
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(name = "Tasks Card", showSystemUi = true)
 @Composable
 fun TasksCardPreview() {
-//    TaskCard(task = Task(title = "Task title", description = "Task Description", isDone = true),)
+    TaskCard(
+        task = Task(title = "Task title", description = "Task Description", isDone = true),
+        {},
+        {},
+        navController = null
+    )
 }
 
 private fun deleteTaskFromDatabase(task: Task, viewModel: TasksViewModel) {

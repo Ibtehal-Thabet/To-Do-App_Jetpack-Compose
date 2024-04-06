@@ -15,7 +15,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -26,7 +30,7 @@ class TasksViewModel(application: Application) : AndroidViewModel(application) {
 
     var taskItems = taskRepository.taskItems
 
-    private val _taskFlow = MutableStateFlow<List<Task>>(listOf())
+    val _taskFlow = MutableStateFlow<List<Task>>(listOf())
     val taskFlow get() = _taskFlow.asStateFlow()
 
     var taskItem by mutableStateOf(Task(0, "", "", 0, false))
@@ -52,6 +56,7 @@ class TasksViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 taskRepository.updateTask(task)
+                getTasksByDay(task.dateTime ?: 0)
             }
         }
     }
@@ -59,7 +64,9 @@ class TasksViewModel(application: Application) : AndroidViewModel(application) {
     fun getTasksByDay(dateTime: Long) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                _taskFlow.value = taskRepository.getTasksByDay(dateTime)
+                taskRepository.getTasksByDay(dateTime).flowOn(Dispatchers.IO).collect {
+                    _taskFlow.value = it
+                }
             }
         }
     }
@@ -80,6 +87,5 @@ class TasksViewModel(application: Application) : AndroidViewModel(application) {
                 updateTask(task = task.copy(id = task.id, isDone = isDone))
             }
         }
-
     }
 }

@@ -38,6 +38,8 @@ import androidx.compose.ui.unit.sp
 import com.example.todo.MyDataBase
 import com.example.todo.model.Task
 import com.example.todoappbyjetpackcompose.R
+import com.example.todoappbyjetpackcompose.ui.tabs.taskList.TasksViewModel
+import com.example.todoappbyjetpackcompose.ui.tabs.taskList.dateTime
 import com.example.todoappbyjetpackcompose.ui.theme.LightPrimary
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -46,8 +48,9 @@ import java.util.Locale
 val calendar = Calendar.getInstance()
 var isAdded = false
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AddTask(onAddTaskClick: (Task) -> Unit) {
+fun AddTask(viewModel: TasksViewModel, onAddTaskClick: (Task) -> Unit) {
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var date by remember { mutableStateOf("") }
@@ -198,6 +201,7 @@ fun AddTask(onAddTaskClick: (Task) -> Unit) {
                             description = description,
                             dateTime = calendar.timeInMillis
                         )
+                    viewModel.getTasksByDay(dateTime)
                     onAddTaskClick(task)
 
                     Toast.makeText(context, R.string.successfully, Toast.LENGTH_LONG).show()
@@ -226,6 +230,6 @@ fun AddTask(onAddTaskClick: (Task) -> Unit) {
 @Preview(name = "Add Task", showSystemUi = true)
 @Composable
 fun AddTaskPreview() {
-    AddTask({})
+//    AddTask({})
 }
 

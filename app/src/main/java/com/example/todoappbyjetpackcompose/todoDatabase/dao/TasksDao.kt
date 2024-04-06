@@ -20,7 +20,7 @@ interface TasksDao {
     fun getAllTasks(): Flow<List<Task>>
 
     @Query("select * from tasks where dateTime = :dateTime")
-    fun getTasksByDay(dateTime: Long): List<Task>
+    fun getTasksByDay(dateTime: Long): Flow<List<Task>>
 
     @Query("select * from tasks where id = :id")
     fun getTaskById(id: Int): Task

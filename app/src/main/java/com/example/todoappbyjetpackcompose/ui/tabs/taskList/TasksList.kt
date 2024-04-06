@@ -101,7 +101,7 @@ fun TasksListContent(
     Scaffold(
         topBar = {
             TopAppBar(stringResource(id = R.string.app_title))
-            Calendar(onDateClickListener)
+            Calendar(viewModel, onDateClickListener)
         }
     ) { contentPadding ->
         Column(
@@ -109,9 +109,6 @@ fun TasksListContent(
                 .padding(contentPadding),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            var isAdded by rememberSaveable {
-                mutableStateOf(isAdded)
-            }
             TaskList(
                 tasksList = tasksList,
                 viewModel,
@@ -126,7 +123,7 @@ fun TasksListContent(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun Calendar(onDateClickListener: (Long) -> Unit) {
+fun Calendar(viewModel: TasksViewModel, onDateClickListener: (Long) -> Unit) {
 
     // get CalendarUiModel from CalendarDataSource, and the lastSelectedDate is Today.
     var calendarUiModel by remember { mutableStateOf(dataSource.getData(lastSelectedDate = dataSource.today)) }
@@ -155,6 +152,7 @@ fun Calendar(onDateClickListener: (Long) -> Unit) {
             }
         )
         Content(
+            viewModel,
             data = calendarUiModel, onClickListener = { date ->
                 // refresh the CalendarUiModel with new data
                 // by changing only the `selectedDate` with the date selected by User
@@ -241,6 +239,7 @@ fun Header(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Content(
+    viewModel: TasksViewModel,
     data: CalendarUiModel,
     onClickListener: (CalendarUiModel.Date) -> Unit,
     onDateClickListener: (Long) -> Unit
@@ -250,7 +249,7 @@ fun Content(
     ) {
         // pass the visibleDates to the UI
         items(items = data.visibleDates) { date ->
-            ContentItem(date = date, onClickListener, onDateClickListener)
+            ContentItem(viewModel, date = date, onClickListener, onDateClickListener)
         }
     }
 }
@@ -258,6 +257,7 @@ fun Content(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ContentItem(
+    viewModel: TasksViewModel,
     date: CalendarUiModel.Date,
     onClickListener: (CalendarUiModel.Date) -> Unit,
     onDateClickListener: (Long) -> Unit,
@@ -273,6 +273,7 @@ fun ContentItem(
                         .atStartOfDay(ZoneOffset.systemDefault())
                         .toInstant()
                         .toEpochMilli()
+                viewModel.getTasksByDay(dateTime)
                 onDateClickListener(dateTime)
             },
         colors = CardDefaults.cardColors(
