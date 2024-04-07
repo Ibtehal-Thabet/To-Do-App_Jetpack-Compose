@@ -1,4 +1,4 @@
-To Do app features:
+# To Do app features:
 - Kotlin
 - Jetpack compose
 - MVVM
