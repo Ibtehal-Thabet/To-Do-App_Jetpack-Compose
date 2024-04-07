@@ -4,6 +4,7 @@
 - MVVM
 - Room database
 - Kotlin Coroutines
+- Kotlin flows
 
 
 
